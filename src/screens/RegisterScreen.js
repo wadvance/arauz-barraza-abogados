@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet,
-  KeyboardAvoidingView, Platform, Alert, ScrollView,
+  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView,
 } from 'react-native';
 import { registerUser } from '../../firebase/auth';
 import { COLORS, SIZES } from '../utils/theme';
@@ -59,19 +58,18 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
+    <View style={styles.container}>
       <ScrollView
+        style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={true}
       >
         <View style={styles.header}>
-            <TouchableOpacity onPress={() => navigation.navigate('Login')} style={styles.backBtn}>
-              <Text style={styles.backText}>←</Text>
-            </TouchableOpacity>
-            <Text style={styles.headerTitle}>Crear Cuenta</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')} style={styles.backBtn}>
+            <Text style={styles.backText}>←</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Crear Cuenta</Text>
           <Text style={styles.headerSubtitle}>Únase a Arauz Barraza Abogados</Text>
         </View>
 
@@ -195,13 +193,14 @@ const RegisterScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.primary },
-  scrollContent: { flexGrow: 1, minHeight: '100%' },
+  scroll: { flex: 1 },
+  scrollContent: { flexGrow: 1 },
   header: {
     padding: 30,
     paddingTop: 60,
