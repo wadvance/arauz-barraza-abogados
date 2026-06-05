@@ -1,15 +1,17 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, StatusBar } from 'react-native';
-import { COLORS, SIZES } from '../utils/theme';
+import { useTheme } from '../context/ThemeContext';
+import { SIZES } from '../utils/theme';
 
 const Header = ({ title, subtitle, onBack, rightAction, rightIcon }) => {
+  const { colors, isDark } = useTheme();
   return (
-    <View style={styles.container}>
-      <StatusBar backgroundColor={COLORS.headerBg} barStyle="light-content" />
+    <View style={[styles.container, { backgroundColor: colors.headerBg }]}>
+      <StatusBar backgroundColor={colors.headerBg} barStyle={isDark ? 'light-content' : 'light-content'} />
       <View style={styles.content}>
         <View style={styles.leftSection}>
           {onBack && (
-            <TouchableOpacity onPress={onBack} style={styles.backBtn}>
+            <TouchableOpacity onPress={onBack} style={[styles.backBtn, { backgroundColor: colors.overlay }]}>
               <Text style={styles.backIcon}>←</Text>
             </TouchableOpacity>
           )}
@@ -19,7 +21,7 @@ const Header = ({ title, subtitle, onBack, rightAction, rightIcon }) => {
           </View>
         </View>
         {rightAction && (
-          <TouchableOpacity onPress={rightAction} style={styles.rightBtn}>
+          <TouchableOpacity onPress={rightAction} style={[styles.rightBtn, { backgroundColor: colors.secondary }]}>
             <Text style={styles.rightIcon}>{rightIcon || '+'}</Text>
           </TouchableOpacity>
         )}
@@ -30,7 +32,6 @@ const Header = ({ title, subtitle, onBack, rightAction, rightIcon }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.headerBg,
     paddingTop: 50,
     paddingBottom: 16,
     borderBottomLeftRadius: 20,
@@ -57,19 +58,18 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.15)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   backIcon: {
     fontSize: 22,
-    color: COLORS.textLight,
+    color: '#FFFFFF',
     fontWeight: 'bold',
   },
   title: {
     fontSize: SIZES.xxl,
     fontWeight: 'bold',
-    color: COLORS.textLight,
+    color: '#FFFFFF',
   },
   subtitle: {
     fontSize: SIZES.xs,
@@ -80,13 +80,12 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: COLORS.secondary,
     justifyContent: 'center',
     alignItems: 'center',
   },
   rightIcon: {
     fontSize: 24,
-    color: COLORS.textLight,
+    color: '#FFFFFF',
     fontWeight: 'bold',
   },
 });

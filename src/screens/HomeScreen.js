@@ -6,8 +6,8 @@ import { onAuthChange, getUserProfile, logoutUser } from '../../firebase/auth';
 import { getDashboardStats, subscribeToCollection } from '../services/firestoreService';
 import Card from '../components/Card';
 import Loading from '../components/Loading';
-import Header from '../components/Header';
-import { COLORS, SIZES } from '../utils/theme';
+import { SIZES } from '../utils/theme';
+import { useTheme } from '../context/ThemeContext';
 import { formatCurrency, parseDate } from '../utils/helpers';
 
 const QUICK_ACTIONS = [
@@ -22,6 +22,7 @@ const QUICK_ACTIONS = [
 ];
 
 const HomeScreen = ({ navigation }) => {
+  const { colors, isDark, toggleTheme } = useTheme();
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [stats, setStats] = useState(null);
@@ -83,47 +84,57 @@ const HomeScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
-      <Header
-        title={`Hola, ${profile?.nombre || 'Usuario'}`}
-        subtitle={profile?.rol ? `Rol: ${profile.rol}` : 'Arauz Barraza Abogados'}
-        rightIcon="🚪"
-        rightAction={handleLogout}
-      />
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.header, { backgroundColor: colors.headerBg }]}>
+        <View style={styles.headerRow}>
+          <View style={styles.headerText}>
+            <Text style={styles.greeting}>Hola, {profile?.nombre || 'Usuario'}</Text>
+            <Text style={styles.role}>{profile?.rol ? `Rol: ${profile.rol}` : 'Arauz Barraza Abogados'}</Text>
+          </View>
+          <View style={styles.headerActions}>
+            <TouchableOpacity onPress={toggleTheme} style={[styles.iconBtn, { backgroundColor: colors.overlay }]}>
+              <Text style={styles.iconBtnText}>{isDark ? '☀️' : '🌙'}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleLogout} style={[styles.logoutBtn, { backgroundColor: colors.accent }]}>
+              <Text style={styles.logoutText}>Salir</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
 
       <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[COLORS.primary]} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} tintColor={colors.primary} />
         }
       >
         <View style={styles.statsRow}>
-          <Card style={styles.statCard}>
+          <View style={[styles.statCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
             <Text style={styles.statIcon}>👥</Text>
-            <Text style={styles.statNumber}>{stats?.totalClientes || 0}</Text>
-            <Text style={styles.statLabel}>Clientes</Text>
-          </Card>
-          <Card style={styles.statCard}>
+            <Text style={[styles.statNumber, { color: colors.primary }]}>{stats?.totalClientes || 0}</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Clientes</Text>
+          </View>
+          <View style={[styles.statCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
             <Text style={styles.statIcon}>📁</Text>
-            <Text style={styles.statNumber}>{stats?.totalExpedientes || 0}</Text>
-            <Text style={styles.statLabel}>Expedientes</Text>
-          </Card>
-          <Card style={styles.statCard}>
+            <Text style={[styles.statNumber, { color: colors.primary }]}>{stats?.totalExpedientes || 0}</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Expedientes</Text>
+          </View>
+          <View style={[styles.statCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
             <Text style={styles.statIcon}>📅</Text>
-            <Text style={styles.statNumber}>{stats?.citasPendientes || 0}</Text>
-            <Text style={styles.statLabel}>Pendientes</Text>
-          </Card>
-          <Card style={styles.statCard}>
+            <Text style={[styles.statNumber, { color: colors.primary }]}>{stats?.citasPendientes || 0}</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Pendientes</Text>
+          </View>
+          <View style={[styles.statCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
             <Text style={styles.statIcon}>💰</Text>
-            <Text style={styles.statNumber}>
+            <Text style={[styles.statNumber, { color: colors.primary }]}>
               {formatCurrency(stats?.cobrosDelMes || 0)}
             </Text>
-            <Text style={styles.statLabel}>Del Mes</Text>
-          </Card>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Del Mes</Text>
+          </View>
         </View>
 
-        <Text style={styles.sectionTitle}>Acciones Rápidas</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Acciones Rápidas</Text>
         <View style={styles.quickActionsGrid}>
           {QUICK_ACTIONS.map((action) => (
             <TouchableOpacity
@@ -131,21 +142,21 @@ const HomeScreen = ({ navigation }) => {
               style={styles.quickAction}
               onPress={() => navigation.navigate(action.key)}
             >
-              <View style={[styles.actionIconBg, { backgroundColor: action.color + '20' }]}>
+              <View style={[styles.actionIconBg, { backgroundColor: action.color + (isDark ? '30' : '15') }]}>
                 <Text style={styles.actionIcon}>{action.icon}</Text>
               </View>
-              <Text style={styles.actionLabel}>{action.label}</Text>
+              <Text style={[styles.actionLabel, { color: colors.text }]}>{action.label}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
         {proximasCitas.length > 0 && (
           <>
-            <Text style={styles.sectionTitle}>Próximas Citas</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Próximas Citas</Text>
             {proximasCitas.map((cita) => (
               <Card key={cita.id} icon="📅" title={cita.titulo || cita.clienteNombre}>
-                <Text style={styles.citaDetail}>
-                    Cliente: {cita.clienteNombre} | {parseDate(cita.fecha)?.toLocaleDateString('es-PA')} - {cita.hora}
+                <Text style={[styles.citaDetail, { color: colors.textSecondary }]}>
+                  Cliente: {cita.clienteNombre} | {parseDate(cita.fecha)?.toLocaleDateString('es-PA')} - {cita.hora}
                 </Text>
               </Card>
             ))}
@@ -157,26 +168,76 @@ const HomeScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
+  container: { flex: 1 },
+  header: {
+    paddingTop: 50,
+    paddingBottom: 20,
+    paddingHorizontal: 16,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  headerText: { flex: 1 },
+  greeting: {
+    fontSize: SIZES.xxl,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  role: {
+    fontSize: SIZES.xs,
+    color: 'rgba(255,255,255,0.7)',
+    marginTop: 2,
+  },
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  iconBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconBtnText: { fontSize: 20 },
+  logoutBtn: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoutText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: SIZES.sm,
+  },
   content: { flex: 1, padding: SIZES.padding },
   statsRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
   statCard: {
     width: '48%',
     alignItems: 'center',
     paddingVertical: 16,
+    borderRadius: SIZES.radius,
+    borderWidth: 1,
+    marginBottom: 10,
   },
   statIcon: { fontSize: 28 },
   statNumber: {
     fontSize: SIZES.xxl,
     fontWeight: 'bold',
-    color: COLORS.primary,
     marginTop: 5,
   },
-  statLabel: { fontSize: SIZES.xs, color: COLORS.textSecondary, marginTop: 2 },
+  statLabel: { fontSize: SIZES.xs, marginTop: 2 },
   sectionTitle: {
     fontSize: SIZES.xl,
     fontWeight: 'bold',
-    color: COLORS.text,
     marginTop: 20,
     marginBottom: 12,
   },
@@ -200,14 +261,12 @@ const styles = StyleSheet.create({
   actionIcon: { fontSize: 26 },
   actionLabel: {
     fontSize: SIZES.xs,
-    color: COLORS.text,
     marginTop: 6,
     textAlign: 'center',
     fontWeight: '500',
   },
   citaDetail: {
     fontSize: SIZES.sm,
-    color: COLORS.textSecondary,
     marginTop: 4,
   },
 });

@@ -1,13 +1,15 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { COLORS, SIZES } from '../utils/theme';
+import { useTheme } from '../context/ThemeContext';
+import { SIZES } from '../utils/theme';
 
 const Card = ({ title, subtitle, icon, onPress, children, style, titleColor, badge }) => {
+  const { colors } = useTheme();
   const Container = onPress ? TouchableOpacity : View;
 
   return (
     <Container
-      style={[styles.card, style]}
+      style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder, shadowColor: colors.cardShadow }, style]}
       onPress={onPress}
       activeOpacity={onPress ? 0.7 : 1}
     >
@@ -15,18 +17,18 @@ const Card = ({ title, subtitle, icon, onPress, children, style, titleColor, bad
         <View style={styles.header}>
           <View style={styles.titleRow}>
             {icon && <Text style={styles.icon}>{icon}</Text>}
-            <Text style={[styles.title, titleColor && { color: titleColor }]}>
+            <Text style={[styles.title, { color: colors.text }, titleColor && { color: titleColor }]}>
               {title}
             </Text>
           </View>
           {badge && (
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>{badge}</Text>
+            <View style={[styles.badge, { backgroundColor: colors.primaryLight }]}>
+              <Text style={[styles.badgeText, { color: colors.textLight }]}>{badge}</Text>
             </View>
           )}
         </View>
       )}
-      {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+      {subtitle && <Text style={[styles.subtitle, { color: colors.textSecondary }]}>{subtitle}</Text>}
       {children}
     </Container>
   );
@@ -34,12 +36,11 @@ const Card = ({ title, subtitle, icon, onPress, children, style, titleColor, bad
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: COLORS.surface,
     borderRadius: SIZES.radius,
     padding: SIZES.padding,
     marginVertical: 6,
     marginHorizontal: 2,
-    shadowColor: COLORS.cardShadow,
+    borderWidth: 1,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
@@ -63,22 +64,18 @@ const styles = StyleSheet.create({
   title: {
     fontSize: SIZES.lg,
     fontWeight: '600',
-    color: COLORS.text,
     flex: 1,
   },
   subtitle: {
     fontSize: SIZES.sm,
-    color: COLORS.textSecondary,
     marginTop: 4,
   },
   badge: {
-    backgroundColor: COLORS.primaryLight,
     borderRadius: 12,
     paddingHorizontal: 10,
     paddingVertical: 3,
   },
   badgeText: {
-    color: COLORS.textLight,
     fontSize: SIZES.xs,
     fontWeight: '600',
   },

@@ -3,7 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, Text, StyleSheet } from 'react-native';
-import { COLORS, SIZES } from '../utils/theme';
+import { useTheme } from '../context/ThemeContext';
+import { SIZES } from '../utils/theme';
 
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
@@ -22,10 +23,12 @@ import ChatbotScreen from '../screens/ChatbotScreen';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const TabIcon = ({ icon, label, focused }) => (
+const TabIcon = ({ icon, label, focused, colors }) => (
   <View style={tabStyles.iconContainer}>
     <Text style={[tabStyles.icon, focused && tabStyles.iconFocused]}>{icon}</Text>
-    <Text style={[tabStyles.label, focused && tabStyles.labelFocused]}>{label}</Text>
+    <Text style={[tabStyles.label, { color: focused ? colors.tabActive : colors.tabInactive }, focused && tabStyles.labelFocused]}>
+      {label}
+    </Text>
   </View>
 );
 
@@ -33,18 +36,20 @@ const tabStyles = StyleSheet.create({
   iconContainer: { alignItems: 'center', justifyContent: 'center' },
   icon: { fontSize: 22, marginBottom: 2 },
   iconFocused: { fontSize: 24 },
-  label: { fontSize: 10, color: COLORS.tabInactive, fontWeight: '500' },
-  labelFocused: { color: COLORS.tabActive, fontWeight: '700' },
+  label: { fontSize: 10, fontWeight: '500' },
+  labelFocused: { fontWeight: '700' },
 });
 
 function MainTabs() {
+  const { colors } = useTheme();
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: COLORS.surface,
-          borderTopWidth: 0,
+          backgroundColor: colors.surface,
+          borderTopWidth: 1,
+          borderTopColor: colors.border,
           height: 65,
           paddingBottom: 8,
           paddingTop: 8,
@@ -55,43 +60,43 @@ function MainTabs() {
           shadowRadius: 6,
         },
         tabBarShowLabel: false,
-        tabBarActiveTintColor: COLORS.tabActive,
-        tabBarInactiveTintColor: COLORS.tabInactive,
+        tabBarActiveTintColor: colors.tabActive,
+        tabBarInactiveTintColor: colors.tabInactive,
       }}
     >
       <Tab.Screen
         name="Inicio"
         component={HomeScreen}
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon icon="🏠" label="Inicio" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon icon="🏠" label="Inicio" focused={focused} colors={colors} />,
         }}
       />
       <Tab.Screen
         name="Clients"
         component={ClientsScreen}
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon icon="👥" label="Clientes" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon icon="👥" label="Clientes" focused={focused} colors={colors} />,
         }}
       />
       <Tab.Screen
         name="Expedientes"
         component={ExpedientesScreen}
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon icon="📁" label="Exp." focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon icon="📁" label="Exp." focused={focused} colors={colors} />,
         }}
       />
       <Tab.Screen
         name="Appointments"
         component={AppointmentsScreen}
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon icon="📅" label="Citas" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon icon="📅" label="Citas" focused={focused} colors={colors} />,
         }}
       />
       <Tab.Screen
         name="Payments"
         component={PaymentsScreen}
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon icon="💰" label="Cobros" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon icon="💰" label="Cobros" focused={focused} colors={colors} />,
         }}
       />
     </Tab.Navigator>
@@ -99,12 +104,13 @@ function MainTabs() {
 }
 
 export default function AppNavigator() {
+  const { colors } = useTheme();
   return (
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
-          cardStyle: { backgroundColor: COLORS.background, flex: 1 },
+          cardStyle: { backgroundColor: colors.background, flex: 1 },
         }}
       >
         <Stack.Screen name="Register" component={RegisterScreen} />
