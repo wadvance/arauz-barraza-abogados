@@ -29,8 +29,6 @@ export const lightColors = {
   gradientEnd: '#534BAE',
   cardBg: '#FFFFFF',
   cardBorder: '#E8E8E8',
-  statCardBg: '#F8F9FF',
-  actionBg: '#F0F0F5',
   overlay: 'rgba(0,0,0,0.05)',
 };
 
@@ -60,8 +58,6 @@ export const darkColors = {
   gradientEnd: '#16213E',
   cardBg: '#2A2A2A',
   cardBorder: '#3A3A3A',
-  statCardBg: '#1E1E2E',
-  actionBg: '#2A2A3A',
   overlay: 'rgba(255,255,255,0.05)',
 };
 
@@ -69,11 +65,17 @@ const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
   const [isDark, setIsDark] = useState(false);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    AsyncStorage.getItem(THEME_KEY).then((value) => {
-      if (value !== null) setIsDark(value === 'dark');
-    });
+    try {
+      AsyncStorage.getItem(THEME_KEY).then((value) => {
+        if (value !== null) setIsDark(value === 'dark');
+        setReady(true);
+      }).catch(() => setReady(true));
+    } catch {
+      setReady(true);
+    }
   }, []);
 
   const toggleTheme = () => {
@@ -85,7 +87,7 @@ export const ThemeProvider = ({ children }) => {
   const colors = isDark ? darkColors : lightColors;
 
   return (
-    <ThemeContext.Provider value={{ isDark, toggleTheme, colors }}>
+    <ThemeContext.Provider value={{ isDark, toggleTheme, colors, ready }}>
       {children}
     </ThemeContext.Provider>
   );

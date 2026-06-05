@@ -92,7 +92,7 @@ const HomeScreen = ({ navigation }) => {
             <Text style={styles.role}>{profile?.rol ? `Rol: ${profile.rol}` : 'Arauz Barraza Abogados'}</Text>
           </View>
           <View style={styles.headerActions}>
-            <TouchableOpacity onPress={toggleTheme} style={[styles.iconBtn, { backgroundColor: colors.overlay }]}>
+            <TouchableOpacity onPress={toggleTheme} style={[styles.iconBtn, { backgroundColor: colors.overlay, marginRight: 8 }]}>
               <Text style={styles.iconBtnText}>{isDark ? '☀️' : '🌙'}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleLogout} style={[styles.logoutBtn, { backgroundColor: colors.accent }]}>
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.7)',
     marginTop: 2,
   },
-  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  headerActions: { flexDirection: 'row', alignItems: 'center' },
   iconBtn: {
     width: 40,
     height: 40,
