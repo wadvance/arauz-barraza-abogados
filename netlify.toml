@@ -19,16 +19,16 @@
     Cache-Control = "no-cache"
 
 [[redirects]]
+  from = "/_expo/*"
+  to = "/_expo/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/favicon.ico"
+  to = "/favicon.ico"
+  status = 200
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
-  status = 200
-
-[[redirects]]
-  from = "/sw.js"
-  to = "/sw.js"
-  status = 200
-
-[[redirects]]
-  from = "/manifest.json"
-  to = "/manifest.json"
   status = 200

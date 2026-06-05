@@ -1,10 +1,9 @@
-import * as Print from 'expo-print';
-import * as Sharing from 'expo-sharing';
-import * as FileSystem from 'expo-file-system';
 import { Platform } from 'react-native';
 import { parseDate } from '../utils/helpers';
 
-const generateHTML = (title, content, data = {}) => {
+const isWeb = Platform.OS === 'web';
+
+const generateHTML = (title, content) => {
   return `
 <!DOCTYPE html>
 <html>
@@ -132,15 +131,15 @@ const generateHTML = (title, content, data = {}) => {
 </head>
 <body>
   <div class="header">
-    <h1>Arauz Carrillo Abogados</h1>
-    <p>Vía España, Edificio Arauz Carrillo • Piso 8, Oficina 801</p>
+    <h1>Arauz Barraza Abogados</h1>
+    <p>Vía España, Edificio Arauz Barraza • Piso 8, Oficina 801</p>
     <p>Ciudad de Panamá, Panamá • Tel: +507 0000-0000</p>
     <span class="badge">${title}</span>
   </div>
   <div class="title">${title}</div>
   ${content}
   <div class="footer">
-    <p><strong>Arauz Carrillo Abogados</strong> - Su confianza, nuestro compromiso</p>
+    <p><strong>Arauz Barraza Abogados</strong> - Su confianza, nuestro compromiso</p>
     <p>Documento generado el ${new Date().toLocaleDateString('es-PA', {
       year: 'numeric', month: 'long', day: 'numeric',
       hour: '2-digit', minute: '2-digit'
@@ -151,9 +150,21 @@ const generateHTML = (title, content, data = {}) => {
 };
 
 export const generatePDF = async (title, content) => {
-  try {
+  if (isWeb) {
     const html = generateHTML(title, content);
-    const { uri } = await Print.printToFileAsync({ html });
+    const win = window.open();
+    if (win) {
+      win.document.write(html);
+      win.document.close();
+      win.focus();
+      win.print();
+    }
+    return { success: true };
+  }
+  try {
+    const { printToFileAsync } = await import('expo-print');
+    const html = generateHTML(title, content);
+    const { uri } = await printToFileAsync({ html });
     return { success: true, uri };
   } catch (error) {
     return { success: false, error: error.message };
@@ -161,17 +172,22 @@ export const generatePDF = async (title, content) => {
 };
 
 export const sharePDF = async (uri, filename) => {
+  if (isWeb) {
+    return { success: true };
+  }
   try {
-    const ext = Platform.OS === 'ios' ? '.pdf' : '.pdf';
-    const newUri = FileSystem.documentDirectory + (filename || 'documento') + ext;
+    const { moveAsync, documentDirectory } = await import('expo-file-system');
+    const { isAvailableAsync, shareAsync } = await import('expo-sharing');
+    const ext = '.pdf';
+    const newUri = documentDirectory + (filename || 'documento') + ext;
 
-    await FileSystem.moveAsync({
+    await moveAsync({
       from: uri,
       to: newUri,
     });
 
-    if (await Sharing.isAvailableAsync()) {
-      await Sharing.shareAsync(newUri, {
+    if (await isAvailableAsync()) {
+      await shareAsync(newUri, {
         mimeType: 'application/pdf',
         dialogTitle: 'Compartir PDF',
         UTI: 'com.adobe.pdf',
