@@ -42,7 +42,8 @@
     "web": "^0.0.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.2"
+    "@babel/core": "^7.25.2",
+    "terser": "^5.48.0"
   },
   "private": true
 }
