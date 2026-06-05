@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView,
+  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, useWindowDimensions,
 } from 'react-native';
 import { registerUser } from '../../firebase/auth';
 import { COLORS, SIZES } from '../utils/theme';
 import { validateEmail } from '../utils/helpers';
 
 const RegisterScreen = ({ navigation }) => {
+  const { height: windowHeight } = useWindowDimensions();
   const [form, setForm] = useState({
     nombre: '',
     apellido: '',
@@ -58,7 +59,7 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { height: windowHeight }]}>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}

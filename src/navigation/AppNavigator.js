@@ -104,7 +104,7 @@ export default function AppNavigator() {
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
-          cardStyle: { backgroundColor: COLORS.background },
+          cardStyle: { backgroundColor: COLORS.background, flex: 1 },
         }}
       >
         <Stack.Screen name="Register" component={RegisterScreen} />
